@@ -1,5 +1,7 @@
 package confeitaria;
+
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import confeitaria.model.Bolo;
 import confeitaria.model.CupCake;
@@ -9,7 +11,7 @@ import controller.ConfeitariaController;
 
 public class Menu {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		Scanner leia = new Scanner(System.in);
 
 		int opcao, tipo, numero;
@@ -38,134 +40,140 @@ public class Menu {
 			System.out.println("Entre com a opção desejada:                           ");
 			System.out.println("                                                      " + Cores.TEXT_RESET);
 
-			opcao = leia.nextInt();
+			try {
+				opcao = leia.nextInt();
 
-			if (opcao == 6) {
-				System.out.println(Cores.TEXT_CYAN_BOLD
-						+ "\n♥ Eli Ateliê de Doces - Tudo feito com Carinho e recheados de Amor ♥\n");
-				sobre();
-				leia.close();
-				System.exit(0);
-			}
-
-			switch (opcao) {
-			case 1:
-				System.out.println(Cores.TEXT_CYAN + "Adicionar Produtos\n");
-
-				do {
-					System.out.print("Digite o Tipo do Produto (1-Bolo ou 2-CupCake): ");
-					tipo = leia.nextInt();
-				} while (tipo < 1 && tipo > 2);
-				leia.skip("\\R?");
-
-				System.out.print("Digite o Sabor : ");
-				sabor = leia.nextLine();
-
-				System.out.print("Digite o Tamanho: ");
-				tamanho = leia.nextLine();
-
-				System.out.print("Digite o Valor: R$ ");
-				preco = leia.nextFloat();
-
-				switch (tipo) {
-				case 1 -> {
-					System.out.print("Digite a Cobertura: ");
-					leia.skip("\\R?");
-					cobertura = leia.nextLine();
-					produtos.cadastrar(new Bolo(produtos.gerarNumero(), tipo, sabor, tamanho, preco, cobertura));
-				}
-				case 2 -> {
-					System.out.print("Digite a decoração desejada: ");
-					leia.skip("\\R?");
-					decoracao = leia.nextLine();
-					produtos.cadastrar(new CupCake(produtos.gerarNumero(), tipo, sabor, tamanho, preco, decoracao));
-				}
+				if (opcao == 6) {
+					System.out.println(Cores.TEXT_CYAN_BOLD
+							+ "\n♥ Eli Ateliê de Doces - Tudo feito com Carinho e recheados de Amor ♥\n");
+					sobre();
+					leia.close();
+					System.exit(0);
 				}
 
-				keyPress();
-				break;
+				switch (opcao) {
+				case 1:
+					System.out.println(Cores.TEXT_CYAN + "Adicionar Produtos\n");
 
-			case 2:
-				System.out.println(Cores.TEXT_CYAN + "Listar todos os Produtos\n\n");
-
-				produtos.listarTodas();
-
-				keyPress();
-				break;
-			case 3:
-				System.out.println(Cores.TEXT_CYAN + "Buscar Produto por Numero\n\n");
-				System.out.println("Digite o número do produto: ");
-				numero = leia.nextInt();
-				produtos.procurarPorNumero(numero);
-
-				keyPress();
-				break;
-
-			case 4:
-				System.out.println(Cores.TEXT_CYAN + "Atualizar Dados do Produto \n\n");
-
-				System.out.print("Digite o número do produto: ");
-				numero = leia.nextInt();
-
-				var buscaProduto = produtos.buscarNaCollection(numero);
-
-				if (buscaProduto != null) {
-					System.out.print("Digite o tipo: ");
+					do {
+						System.out.print("Digite o Tipo do Produto (1-Bolo ou 2-CupCake): ");
+						tipo = leia.nextInt();
+					} while (tipo < 1 || tipo > 2);
 					leia.skip("\\R?");
-					tipo = leia.nextInt();
-					
-					System.out.print("Digite o sabor: ");
-					leia.skip("\\R?");
+
+					System.out.print("Digite o Sabor : ");
 					sabor = leia.nextLine();
-					
-					System.out.print("Digite o tamanho: ");
-					leia.skip("\\R?");
-					tamanho = leia.nextLine();
-					
-					System.out.print("Digite o valor (R$) : ");
-					leia.skip("\\R?");
-					preco = leia.nextFloat();
 
-					tipo = buscaProduto.getTipo();
+					System.out.print("Digite o Tamanho: ");
+					tamanho = leia.nextLine();
+
+					System.out.print("Digite o Valor: (R$) ");
+					preco = leia.nextFloat();
 
 					switch (tipo) {
 					case 1 -> {
 						System.out.print("Digite a Cobertura: ");
 						leia.skip("\\R?");
 						cobertura = leia.nextLine();
-						produtos.atualizar(new Bolo(numero, tipo, sabor, tamanho, preco, cobertura));
+						produtos.cadastrar(new Bolo(produtos.gerarNumero(), tipo, sabor, tamanho, preco, cobertura));
 					}
 					case 2 -> {
 						System.out.print("Digite a decoração desejada: ");
 						leia.skip("\\R?");
 						decoracao = leia.nextLine();
-						produtos.atualizar(new CupCake(numero, tipo, sabor, tamanho, preco, decoracao));
-					}
-
-					default -> {
-						System.out.println("Tipo de produto inválido!");
+						produtos.cadastrar(new CupCake(produtos.gerarNumero(), tipo, sabor, tamanho, preco, decoracao));
 					}
 					}
 
-				} else
-					System.out.println("\nProduto não encontrado!");
+					keyPress();
+					break;
 
-				keyPress();
-				break;
+				case 2:
+					System.out.println(Cores.TEXT_CYAN + "Listar todos os Produtos\n\n");
 
-			case 5:
-				System.out.println(Cores.TEXT_CYAN + "Deletar Produto \n\n");
-				System.out.println("Digite o número do produto: ");
-				numero = leia.nextInt();
+					produtos.listarTodas();
 
-				produtos.deletar(numero);
+					keyPress();
+					break;
+				case 3:
+					System.out.println(Cores.TEXT_CYAN + "Buscar Produto por Numero\n\n");
+					System.out.println("Digite o número do produto: ");
+					numero = leia.nextInt();
+					produtos.procurarPorNumero(numero);
 
-				keyPress();
-				break;
+					keyPress();
+					break;
 
-			default:
-				System.out.println(Cores.TEXT_CYAN + "\nOpção Inválida!\n" + Cores.TEXT_RESET);
-				break;
+				case 4:
+					System.out.println(Cores.TEXT_CYAN + "Atualizar Dados do Produto \n\n");
+
+					System.out.print("Digite o número do produto: ");
+					numero = leia.nextInt();
+
+					var buscaProduto = produtos.buscarNaCollection(numero);
+
+					if (buscaProduto != null) {
+						System.out.print("Digite o tipo: ");
+						leia.skip("\\R?");
+						tipo = leia.nextInt();
+
+						System.out.print("Digite o sabor: ");
+						leia.skip("\\R?");
+						sabor = leia.nextLine();
+
+						System.out.print("Digite o tamanho: ");
+						leia.skip("\\R?");
+						tamanho = leia.nextLine();
+
+						System.out.print("Digite o valor (R$) : ");
+						leia.skip("\\R?");
+						preco = leia.nextFloat();
+
+						tipo = buscaProduto.getTipo();
+
+						switch (tipo) {
+						case 1 -> {
+							System.out.print("Digite a Cobertura: ");
+							leia.skip("\\R?");
+							cobertura = leia.nextLine();
+							produtos.atualizar(new Bolo(numero, tipo, sabor, tamanho, preco, cobertura));
+						}
+						case 2 -> {
+							System.out.print("Digite a decoração desejada: ");
+							leia.skip("\\R?");
+							decoracao = leia.nextLine();
+							produtos.atualizar(new CupCake(numero, tipo, sabor, tamanho, preco, decoracao));
+						}
+
+						default -> {
+							System.out.println("Tipo de produto inválido!");
+						}
+						}
+
+					} else
+						System.out.println("\nProduto não encontrado!");
+
+					keyPress();
+					break;
+
+				case 5:
+					System.out.println(Cores.TEXT_CYAN + "Deletar Produto \n\n");
+					System.out.println("Digite o número do produto: ");
+					numero = leia.nextInt();
+
+					produtos.deletar(numero);
+
+					keyPress();
+					break;
+
+				default:
+					System.out.println(Cores.TEXT_CYAN + "\nOpção Inválida!\n" + Cores.TEXT_RESET);
+					break;
+				}
+			} catch (InputMismatchException e) {
+				System.out.println("\nDigite valores inteiros!");
+				leia.nextLine();
+				opcao = 0;
 			}
 		}
 	}
